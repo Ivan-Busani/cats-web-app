@@ -16,7 +16,7 @@ export default async function CatModal({ params }: Props) {
     <Modal>
       <div className="bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-w-5xl w-full max-h-[90vh] border border-zinc-200">
         {/* Lado Izquierdo: Imagen */}
-        <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-zinc-100">
+        <div className="relative w-full md:w-1/2 h-[420px] md:h-[480px] bg-zinc-100">
           <Image
             src={cat.url}
             alt={id}

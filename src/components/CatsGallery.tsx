@@ -37,6 +37,7 @@ export function CatsGallery({ initialCats }: CatGalleryProps) {
         {displayCats.map((cat, index) => (
           <Link
             href={`/cat/${cat.id}`}
+            scroll={false}
             key={`${cat.id}-${index}`}
             className="relative aspect-square rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer block"
           >

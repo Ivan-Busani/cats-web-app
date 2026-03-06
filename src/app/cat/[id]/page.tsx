@@ -48,7 +48,7 @@ export default async function CatDetailsPage({ params }: CatDetailsProps) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-zinc-100">
-        <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto min-h-[400px]">
+        <div className="relative w-full md:w-1/2 h-[420px] md:h-[480px]">
           <Image
             src={cat.url}
             alt={`Detalle del gato ${cat.id}`}
