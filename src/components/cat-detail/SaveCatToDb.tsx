@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { CatImage } from "@/types/cat";
 import { SaveCatPayload } from "@/types/cat_db";
-import { saveCat as saveCatGo } from "@/actions/go.actions";
-import { saveCat as saveCatPython } from "@/actions/python.actions";
-import { saveCat as saveCatJava } from "@/actions/java.actions";
+import { saveFavorite as saveCatGo } from "@/actions/go.actions";
+import { saveFavorite as saveCatPython } from "@/actions/python.actions";
+import { saveFavorite as saveCatJava } from "@/actions/java.actions";
 import { Alert, Button, Select, Stack, Text, type StackProps } from "@mantine/core";
 
 type ApiChoice = "go" | "python" | "java";

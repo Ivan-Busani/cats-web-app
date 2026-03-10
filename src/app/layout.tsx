@@ -6,7 +6,8 @@ import { mantineHtmlProps } from "@mantine/core";
 import { CookieColorSchemeScript } from "@/lib/cookie-color-scheme";
 import { Providers } from "./providers";
 import { Header } from "@/components/layout/Header";
-import { Box, Stack, Text } from "@mantine/core";
+import { Footer } from "@/components/layout/Footer";
+import { Box, Stack } from "@mantine/core";
 
 const THEME_COOKIE = "mantine-color-scheme";
 
@@ -47,15 +48,7 @@ export default async function RootLayout({
               {modal}
             </Box>
 
-            <Box
-              component="footer"
-              py="sm"
-              ta="center"
-            >
-              <Text size="sm">
-                © {new Date().getFullYear()} CatGallery
-              </Text>
-            </Box>
+            <Footer />
           </Stack>
         </Providers>
       </body>

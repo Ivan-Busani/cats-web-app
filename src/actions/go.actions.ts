@@ -8,7 +8,7 @@ const baseUrl = () => {
   return url.replace(/\/$/, "");
 };
 
-export async function fetchCats(): Promise<CatDB[]> {
+export async function fetchFavorites(): Promise<CatDB[]> {
   const response = await fetch(`${baseUrl()}/api/v1/cats/list/`, {
     cache: "no-store",
   });
@@ -20,7 +20,7 @@ export async function fetchCats(): Promise<CatDB[]> {
   return response.json();
 }
 
-export async function saveCat(payload: SaveCatPayload): Promise<CatDB> {
+export async function saveFavorite(payload: SaveCatPayload): Promise<CatDB> {
   const response = await fetch(`${baseUrl()}/api/v1/cats/save/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
