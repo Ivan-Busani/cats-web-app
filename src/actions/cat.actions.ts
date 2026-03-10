@@ -9,6 +9,7 @@ const baseUrl = () => {
 };
 
 export async function fetchCats(limit: number = 12, has_breeds: boolean = true): Promise<CatImage[]> {
+  // await new Promise(resolve => setTimeout(resolve, 5000));
   const response = await fetch(`${baseUrl()}/v1/images/search?limit=${limit}&has_breeds=${has_breeds}`, {
     headers: {
       'x-api-key': process.env.CAT_API_KEY as string,

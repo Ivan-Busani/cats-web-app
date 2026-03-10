@@ -1,4 +1,4 @@
-import { CatsGallerySkeleton } from "@/components/CatsGallerySkeleton";
+import { CatsGallerySkeleton } from "@/components/gallery/CatsGallerySkeleton";
 
 export default function Loading() {
   return <CatsGallerySkeleton />;

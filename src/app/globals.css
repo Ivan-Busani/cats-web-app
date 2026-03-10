@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: rgb(241, 243, 245);
   --foreground: #171717;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --background: #1f1f1f;
+  --foreground: rgb(241, 243, 245);
 }
 
 @theme inline {
@@ -12,15 +17,17 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Container theme-aware bg (avoids hydration mismatch vs useMantineColorScheme in theme) */
+.mantine-Container-root {
+  background-color: rgb(241, 243, 245);
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Container-root {
+  background-color: #1f1f1f;
 }

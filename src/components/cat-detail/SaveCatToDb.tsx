@@ -6,6 +6,7 @@ import { SaveCatPayload } from "@/types/cat_db";
 import { saveCat as saveCatGo } from "@/actions/go.actions";
 import { saveCat as saveCatPython } from "@/actions/python.actions";
 import { saveCat as saveCatJava } from "@/actions/java.actions";
+import { Alert, Button, Select, Stack, Text, type StackProps } from "@mantine/core";
 
 type ApiChoice = "go" | "python" | "java";
 
@@ -14,9 +15,11 @@ interface SaveCatToDbProps {
   className?: string;
 }
 
-export function SaveCatToDb({ cat, className = "" }: SaveCatToDbProps) {
+export function SaveCatToDb({ cat, className }: SaveCatToDbProps) {
   const [api, setApi] = useState<ApiChoice>("go");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
   const [message, setMessage] = useState("");
 
   const payload: SaveCatPayload = {
@@ -49,41 +52,37 @@ export function SaveCatToDb({ cat, className = "" }: SaveCatToDbProps) {
   }
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <label htmlFor="api-select" className="sr-only">
-          API para guardar
-        </label>
-        <select
-          id="api-select"
+    <Stack className={className}>
+      <Stack align="center">
+        <Select label="API para guardar"
+          aria-label="API para guardar"
+          data={[
+            { value: "go", label: "API Go" },
+            { value: "python", label: "API Python" },
+            { value: "java", label: "API Java" },
+          ]}
           value={api}
-          onChange={(e) => setApi(e.target.value as ApiChoice)}
+          onChange={(value) => value && setApi(value as ApiChoice)}
           disabled={status === "loading"}
-          className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white text-zinc-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
-        >
-          <option value="go">API Go</option>
-          <option value="python">API Python</option>
-          <option value="java">API Java</option>
-        </select>
-        <button
+          style={{ width: "100%" }}
+        />
+        <Button
           type="button"
           onClick={handleSave}
-          disabled={status === "loading"}
-          className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-60 transition-colors active:scale-[0.98]"
+          fullWidth
+          loading={status === "loading"}
         >
-          {status === "loading" ? "Guardando…" : "Guardar en base de datos"}
-        </button>
-      </div>
+          Guardar en base de datos
+        </Button>
+      </Stack>
+
       {message && (
-        <p
-          role="alert"
-          className={`text-sm font-medium ${
-            status === "success" ? "text-green-700" : status === "error" ? "text-red-700" : "text-zinc-600"
-          }`}
+        <Alert
+          color={status === "success" ? "green" : status === "error" ? "red" : "blue"}
         >
-          {message}
-        </p>
+          <Text size="sm">{message}</Text>
+        </Alert>
       )}
-    </div>
+    </Stack>
   );
 }

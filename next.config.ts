@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         hostname: "cdn2.thecatapi.com",
       },
     ],
+  },
+  webpack: (config) => {
+    config.cache = false;
+    return config;
   }
 };
 
