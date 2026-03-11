@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getCatById } from "@/actions/cat.actions";
+import { getCatById } from "@/actions/cat-api.actions";
+import { getFavoriteByCatId } from "@/actions/api.actions";
 import {
   Button,
   Container,
@@ -8,6 +9,7 @@ import { CatDetailCard } from "@/components/cat-detail/CatDetailCard";
 
 interface CatDetailsProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ isFavorite?: boolean }>;
 }
 
 export async function generateMetadata({
@@ -35,10 +37,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function CatDetailsPage({ params }: CatDetailsProps) {
+export default async function CatDetailsPage({ params, searchParams }: CatDetailsProps) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
   const cat = await getCatById(resolvedParams.id);
-  const breed = cat.breeds[0];
+  const isFavorite = resolvedSearchParams.isFavorite;
+  const favorite = isFavorite ? await getFavoriteByCatId(cat.id) : null;
 
   return (
     <Container size="lg" py="xl">
@@ -46,7 +50,7 @@ export default async function CatDetailsPage({ params }: CatDetailsProps) {
         ← Volver a la galería
       </Button>
 
-      <CatDetailCard cat={cat} />
+      <CatDetailCard cat={cat} isFavorite={isFavorite} dbId={favorite?.id} />
     </Container>
   );
 }

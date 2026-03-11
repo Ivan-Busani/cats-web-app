@@ -8,8 +8,7 @@ import { Providers } from "./providers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Box, Stack } from "@mantine/core";
-
-const THEME_COOKIE = "mantine-color-scheme";
+import { PREFERENCES_COOKIE } from "@/lib/preferences-cookies";
 
 export const metadata: Metadata = {
   title: "CatGallery",
@@ -24,21 +23,53 @@ export default async function RootLayout({
   modal: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const themeCookie = cookieStore.get(THEME_COOKIE)?.value;
-  const initialColorScheme =
-    themeCookie === "light" || themeCookie === "dark" || themeCookie === "auto"
-      ? themeCookie
-      : "light";
+  const prefsCookie = cookieStore.get(PREFERENCES_COOKIE)?.value;
+  
+  let initialColorScheme: "light" | "dark" | "auto" = "light";
+  let initialApi: "go" | "python" | "java" = "go";
+
+  if (prefsCookie) {
+    try {
+      const parsed = JSON.parse(prefsCookie) as {
+        colorScheme?: string;
+        api?: string;
+      };
+      if (
+        parsed.colorScheme === "light" ||
+        parsed.colorScheme === "dark" ||
+        parsed.colorScheme === "auto"
+      ) {
+        initialColorScheme = parsed.colorScheme;
+      }
+      if (
+        parsed.api === "go" ||
+        parsed.api === "python" ||
+        parsed.api === "java"
+      ) {
+        initialApi = parsed.api;
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   return (
-    <html lang="es" {...mantineHtmlProps}>
+    <html
+      lang="es"
+      {...mantineHtmlProps}
+      data-initial-api={initialApi}
+      data-initial-color-scheme={initialColorScheme}
+    >
       <head>
         <CookieColorSchemeScript defaultColorScheme="light" />
       </head>
       <body>
-        <Providers defaultColorScheme={initialColorScheme}>
+        <Providers
+          defaultColorScheme={initialColorScheme}
+          defaultApi={initialApi}
+        >
           <Stack mih="100vh" gap={0}>
-            <Header />
+            <Header initialApi={initialApi} />
 
             <Box
               component="main"

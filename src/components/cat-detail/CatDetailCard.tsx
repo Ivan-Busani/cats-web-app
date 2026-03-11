@@ -3,28 +3,29 @@ import { SaveCatToDb } from "@/components/cat-detail/SaveCatToDb";
 import {
   Anchor,
   Badge,
-  Box,
   Button,
   Card,
-  CardSection,
-  Container,
   Grid,
   GridCol,
   Group,
   Image,
-  SimpleGrid,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
 
 type CatDetailCardProps = {
   cat: CatImage;
-  /** Si es modal, por ejemplo puedes ajustar tamaños luego */
   isModal?: boolean;
+  isFavorite?: boolean;
+  dbId?: number;
 };
 
-export function CatDetailCard({ cat, isModal = false }: CatDetailCardProps) {
+export function CatDetailCard({ 
+  cat, 
+  isModal = false, 
+  isFavorite = false,
+  dbId,
+}: CatDetailCardProps) {
   const breed = cat.breeds[0];
 
   return (
@@ -62,7 +63,7 @@ export function CatDetailCard({ cat, isModal = false }: CatDetailCardProps) {
             <Text component="span" c="blue">
               {breed?.name ?? "Desconocida"}
             </Text>
-            <Badge color="pink">{breed.origin}</Badge>
+            <Badge color="pink">{breed?.origin ?? "Desconocido"}</Badge>
           </Group>
 
           {breed ? (
@@ -79,7 +80,7 @@ export function CatDetailCard({ cat, isModal = false }: CatDetailCardProps) {
               </Group>
               <Group justify="space-between">
                 <Text fw={600}>Origen:</Text>
-                <Text>{breed.origin}</Text>
+                <Text>{breed.origin ?? "Desconocido"}</Text>
               </Group>
               <Group justify="space-between">
                 <Text fw={600}>Países:</Text>
@@ -116,7 +117,7 @@ export function CatDetailCard({ cat, isModal = false }: CatDetailCardProps) {
           </Group>
 
           <Stack justify="center" align="center">
-            <SaveCatToDb cat={cat} />
+            <SaveCatToDb cat={cat} isFavorite={isFavorite} dbId={dbId} />
           </Stack>
         </GridCol>
       </Grid>

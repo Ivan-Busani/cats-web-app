@@ -1,22 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
 import { CatImage } from "@/types/cat";
 import { SaveCatPayload } from "@/types/cat_db";
-import { saveFavorite as saveCatGo } from "@/actions/go.actions";
-import { saveFavorite as saveCatPython } from "@/actions/python.actions";
-import { saveFavorite as saveCatJava } from "@/actions/java.actions";
-import { Alert, Button, Select, Stack, Text, type StackProps } from "@mantine/core";
-
-type ApiChoice = "go" | "python" | "java";
+import { saveFavorite, deleteFavorite } from "@/actions/api.actions";
+import { API_LABELS } from "@/lib/preferences-cookies";
+import { useCatStore } from "@/store/cats.store";
+import { usePreferencesStore } from "@/store/preferences.store";
+import { Alert, Button, Group, Modal, Stack, Text } from "@mantine/core";
 
 interface SaveCatToDbProps {
   cat: CatImage;
+  isFavorite?: boolean;
+  dbId?: number;
   className?: string;
 }
 
-export function SaveCatToDb({ cat, className }: SaveCatToDbProps) {
-  const [api, setApi] = useState<ApiChoice>("go");
+export function SaveCatToDb({ cat, isFavorite = false, dbId, className }: SaveCatToDbProps) {
+  const router = useRouter();
+  const addFavorite = useCatStore((state) => state.addFavorite);
+  const removeFavoriteById = useCatStore((state) => state.removeFavoriteById);
+  const api = usePreferencesStore((state) => state.api);
+  const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   );
@@ -34,16 +41,9 @@ export function SaveCatToDb({ cat, className }: SaveCatToDbProps) {
     setStatus("loading");
     setMessage("");
     try {
-      if (api === "go") {
-        await saveCatGo(payload);
-        setMessage("Guardado en la base de datos (API Go).");
-      } else if (api === "python") {
-        await saveCatPython(payload);
-        setMessage("Guardado en la base de datos (API Python).");
-      } else {
-        await saveCatJava(payload);
-        setMessage("Guardado en la base de datos (API Java).");
-      }
+      const saved = await saveFavorite(payload);
+      addFavorite(saved);
+      setMessage(`Guardado en favoritos (${API_LABELS[api]}).`);
       setStatus("success");
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Error al guardar.");
@@ -51,30 +51,60 @@ export function SaveCatToDb({ cat, className }: SaveCatToDbProps) {
     }
   }
 
+  async function handleDelete() {
+    closeDelete();
+    setStatus("loading");
+    setMessage("");
+    try {
+      await deleteFavorite(String(dbId!));
+      removeFavoriteById(dbId!);
+      router.back();
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "Error al eliminar.");
+      setStatus("error");
+    }
+  }
+
   return (
     <Stack className={className}>
       <Stack align="center">
-        <Select label="API para guardar"
-          aria-label="API para guardar"
-          data={[
-            { value: "go", label: "API Go" },
-            { value: "python", label: "API Python" },
-            { value: "java", label: "API Java" },
-          ]}
-          value={api}
-          onChange={(value) => value && setApi(value as ApiChoice)}
-          disabled={status === "loading"}
-          style={{ width: "100%" }}
-        />
-        <Button
-          type="button"
-          onClick={handleSave}
-          fullWidth
-          loading={status === "loading"}
-        >
-          Guardar en base de datos
-        </Button>
+        {!isFavorite && (
+          <Button
+            type="button"
+            onClick={handleSave}
+            fullWidth
+            loading={status === "loading"}
+          >
+            Guardar en favoritos
+          </Button>
+        )}
+        {isFavorite && dbId != null && (
+          <Button
+            type="button"
+            variant="light"
+            color="red"
+            fullWidth
+            onClick={openDelete}
+            loading={status === "loading"}
+          >
+            Eliminar de favoritos
+          </Button>
+        )}
       </Stack>
+
+      <Modal opened={deleteOpened} onClose={closeDelete} title="Confirmar eliminación" centered>
+        <Text size="sm" mb="md">
+          ¿Estás seguro de que quieres eliminar este gato de tus favoritos?
+        </Text>
+        <Group justify="flex-end" gap="xs">
+          <Button variant="default" onClick={closeDelete}>
+            Cancelar
+          </Button>
+          <Button color="red" onClick={handleDelete}>
+            Eliminar
+          </Button>
+        </Group>
+      </Modal>
 
       {message && (
         <Alert

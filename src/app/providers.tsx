@@ -7,10 +7,13 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { cookieColorSchemeManager } from "@/lib/cookie-color-scheme";
+import { PreferencesHydrator } from "@/components/layout/PreferencesHydrator";
+import { PreferencesSync } from "@/components/layout/PreferencesSync";
 
 type ProvidersProps = {
   children: React.ReactNode;
   defaultColorScheme?: "light" | "dark" | "auto";
+  defaultApi?: "go" | "python" | "java";
 };
 
 const theme = createTheme({
@@ -60,14 +63,24 @@ const theme = createTheme({
   },
 });
 
-export function Providers({ children, defaultColorScheme = "light" }: ProvidersProps) {
+export function Providers({
+  children,
+  defaultColorScheme = "light",
+  defaultApi = "go",
+}: ProvidersProps) {
   return (
     <MantineProvider
       theme={theme}
       defaultColorScheme={defaultColorScheme}
       colorSchemeManager={cookieColorSchemeManager()}
     >
-      {children}
+      <PreferencesHydrator
+        initialColorScheme={defaultColorScheme}
+        initialApi={defaultApi}
+      >
+        <PreferencesSync />
+        {children}
+      </PreferencesHydrator>
     </MantineProvider>
   );
 }

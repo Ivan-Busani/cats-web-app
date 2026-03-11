@@ -1,6 +1,6 @@
 import type { MantineColorScheme, MantineColorSchemeManager } from "@mantine/core";
+import { PREFERENCES_COOKIE } from "./preferences-cookies";
 
-const COOKIE_KEY = "mantine-color-scheme";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 function getCookie(name: string): string | null {
@@ -18,42 +18,77 @@ function isMantineColorScheme(value: string | null): value is MantineColorScheme
   return value === "light" || value === "dark" || value === "auto";
 }
 
+function getColorSchemeFromPreferences(): MantineColorScheme | null {
+  const raw = getCookie(PREFERENCES_COOKIE);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as { colorScheme?: string };
+    const scheme = parsed?.colorScheme ?? null;
+    return isMantineColorScheme(scheme) ? scheme : null;
+  } catch {
+    return null;
+  }
+}
+
+function setColorSchemeInPreferences(value: MantineColorScheme) {
+  const raw = getCookie(PREFERENCES_COOKIE);
+  let parsed: Record<string, unknown> = {};
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      // ignore
+    }
+  }
+  parsed.colorScheme = value;
+  setCookie(
+    PREFERENCES_COOKIE,
+    JSON.stringify(parsed),
+    COOKIE_MAX_AGE
+  );
+}
+
 export function cookieColorSchemeManager(): MantineColorSchemeManager {
   return {
     get: (defaultValue) => {
-      const stored = getCookie(COOKIE_KEY);
+      const stored = getColorSchemeFromPreferences();
       return isMantineColorScheme(stored) ? stored : defaultValue;
     },
     set: (value) => {
-      setCookie(COOKIE_KEY, value, COOKIE_MAX_AGE);
+      setColorSchemeInPreferences(value);
     },
     subscribe: () => {},
     unsubscribe: () => {},
     clear: () => {
-      setCookie(COOKIE_KEY, "", 0);
+      setColorSchemeInPreferences("light");
     },
   };
 }
 
 export interface CookieColorSchemeScriptProps {
   defaultColorScheme?: MantineColorScheme;
-  cookieKey?: string;
 }
 
 /**
- * Replaces ColorSchemeScript to read from cookies instead of localStorage.
- * Must match cookieKey with cookieColorSchemeManager.
+ * Reads colorScheme from cats-preferences cookie for initial HTML attribute.
  */
 export function CookieColorSchemeScript({
   defaultColorScheme = "light",
-  cookieKey = COOKIE_KEY,
 }: CookieColorSchemeScriptProps) {
   const script = `
 (function() {
   try {
-    var match = document.cookie.match(new RegExp("(^| )" + "${cookieKey}" + "=([^;]+)"));
+    var match = document.cookie.match(new RegExp("(^| )" + "${PREFERENCES_COOKIE}" + "=([^;]+)"));
     var stored = match ? decodeURIComponent(match[2]) : null;
-    var colorScheme = (stored === "light" || stored === "dark" || stored === "auto") ? stored : "${defaultColorScheme}";
+    var colorScheme = "${defaultColorScheme}";
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (parsed.colorScheme === "light" || parsed.colorScheme === "dark" || parsed.colorScheme === "auto") {
+          colorScheme = parsed.colorScheme;
+        }
+      } catch (e) {}
+    }
     var computed = colorScheme !== "auto" ? colorScheme : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-mantine-color-scheme", computed);
   } catch (e) {}
