@@ -1,10 +1,11 @@
-export type ApiChoice = "go" | "python" | "java";
+export type ApiChoice = "go" | "python" | "java" | "nodejs";
 export type ColorScheme = "light" | "dark" | "auto";
 
 export const API_LABELS: Record<ApiChoice, string> = {
   go: "API Go",
   python: "API Python",
   java: "API Java",
+  nodejs: "API Node.js",
 };
 
 export interface UserPreferences {
@@ -36,7 +37,7 @@ function isValidColorScheme(value: string): value is ColorScheme {
 }
 
 function isValidApi(value: string): value is ApiChoice {
-  return value === "go" || value === "python" || value === "java";
+  return value === "go" || value === "python" || value === "java" || value === "nodejs";
 }
 
 export function getPreferences(): UserPreferences {

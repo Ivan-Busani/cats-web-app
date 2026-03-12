@@ -8,6 +8,7 @@ const API_URL_ENV: Record<ApiChoice, string> = {
   go: "GO_API_URL",
   java: "JAVA_API_URL",
   python: "PYTHON_API_URL",
+  nodejs: "NODE_API_URL",
 };
 
 function getBaseUrl(api: ApiChoice): string {
@@ -23,7 +24,7 @@ async function getApiFromCookie(): Promise<ApiChoice> {
   if (!raw) return "go";
   try {
     const parsed = JSON.parse(raw) as { api?: string };
-    if (parsed.api === "go" || parsed.api === "python" || parsed.api === "java") {
+    if (parsed.api === "go" || parsed.api === "python" || parsed.api === "java" || parsed.api === "nodejs") {
       return parsed.api;
     }
   } catch {

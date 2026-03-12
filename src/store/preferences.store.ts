@@ -13,7 +13,7 @@ function getInitialState(): { api: ApiChoice; colorScheme: ColorScheme } {
       "data-initial-color-scheme"
     );
     if (
-      (api === "go" || api === "python" || api === "java") &&
+      (api === "go" || api === "python" || api === "java" || api === "nodejs") &&
       (colorScheme === "light" || colorScheme === "dark" || colorScheme === "auto")
     ) {
       return { api, colorScheme };

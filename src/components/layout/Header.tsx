@@ -6,7 +6,7 @@ import { useComputedColorScheme } from "@mantine/core";
 import Link from "next/link";
 import { usePreferencesStore } from "@/store/preferences.store";
 
-type ApiChoice = "go" | "python" | "java";
+type ApiChoice = "go" | "python" | "java" | "nodejs";
 
 interface HeaderProps {
   initialApi: ApiChoice;
@@ -25,7 +25,7 @@ export function Header({ initialApi }: HeaderProps) {
   }, [initialApi]);
 
   const handleApiChange = (value: string | null) => {
-    if (value && (value === "go" || value === "python" || value === "java")) {
+    if (value && (value === "go" || value === "python" || value === "java" || value === "nodejs")) {
       setApiState(value);
       setApi(value);
     }
@@ -74,6 +74,7 @@ export function Header({ initialApi }: HeaderProps) {
             data={[
               { value: "go", label: "API Go" },
               { value: "java", label: "API Java" },
+              { value: "nodejs", label: "API Node.js" },
               { value: "python", label: "API Python" },
             ]}
             value={api}

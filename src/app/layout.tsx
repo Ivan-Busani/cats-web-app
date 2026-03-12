@@ -26,7 +26,7 @@ export default async function RootLayout({
   const prefsCookie = cookieStore.get(PREFERENCES_COOKIE)?.value;
   
   let initialColorScheme: "light" | "dark" | "auto" = "light";
-  let initialApi: "go" | "python" | "java" = "go";
+  let initialApi: "go" | "python" | "java" | "nodejs" = "go";
 
   if (prefsCookie) {
     try {
@@ -44,7 +44,8 @@ export default async function RootLayout({
       if (
         parsed.api === "go" ||
         parsed.api === "python" ||
-        parsed.api === "java"
+        parsed.api === "java" ||
+        parsed.api === "nodejs"
       ) {
         initialApi = parsed.api;
       }
